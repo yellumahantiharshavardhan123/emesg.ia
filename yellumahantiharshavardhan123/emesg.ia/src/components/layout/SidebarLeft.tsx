@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/supabaseClient'
 import type { Chat, Group, Profile } from '@/utils/types'
 import { useAuth } from '@/hooks/useAuth'
-import { MessageSquare, Users2, Plus } from 'lucide-react'
+import { MessageSquare, Users2, Plus, Settings } from 'lucide-react'
 
 export default function SidebarLeft({ onSelect, active }: { onSelect: (t: 'chat' | 'group', id: string) => void; active: { type: 'chat' | 'group' | null; id?: string | null } }) {
   const { user } = useAuth()
@@ -63,13 +63,29 @@ export default function SidebarLeft({ onSelect, active }: { onSelect: (t: 'chat'
         ))}
         <div className="px-2 py-3 text-xs uppercase tracking-wide opacity-60">Groups</div>
         {groups.map((g) => (
-          <button key={g.id} onClick={() => onSelect('group', g.id)} className={`w-full text-left px-3 py-2 hover:bg-white/5 flex items-center gap-3 ${active.type==='group'&&active.id===g.id?'bg-white/5':''}`}>
-            <div className="h-9 w-9 rounded-full bg-white/10" />
-            <div className="flex-1">
-              <div className="text-sm font-medium flex items-center gap-2"><Users2 size={14} /> {g.name}</div>
-              <div className="text-xs opacity-60">Participants: {g.participants.length}</div>
-            </div>
-          </button>
+          <div key={g.id} className={`px-3 py-2 hover:bg-white/5 flex items-center gap-3 ${active.type==='group'&&active.id===g.id?'bg-white/5':''}`}>
+            <button onClick={() => onSelect('group', g.id)} className="flex-1 text-left flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full bg-white/10" />
+              <div className="flex-1">
+                <div className="text-sm font-medium flex items-center gap-2"><Users2 size={14} /> {g.name}</div>
+                <div className="text-xs opacity-60">Participants: {g.participants.length}</div>
+              </div>
+            </button>
+            <button className="btn-outline" title="Manage participants" onClick={async () => {
+              const input = prompt('Comma-separated user IDs (participants)', g.participants.join(','))
+              if (input == null) return
+              const arr = input.split(',').map((s) => s.trim()).filter(Boolean)
+              await supabase.from('groups').update({ participants: arr }).eq('id', g.id)
+              const { data: groupsData } = await supabase
+                .from('groups')
+                .select('*')
+                .contains('participants', [user!.id])
+                .order('created_at', { ascending: false })
+              setGroups((groupsData as Group[]) || [])
+            }}>
+              <Settings size={16} />
+            </button>
+          </div>
         ))}
       </div>
     </div>
