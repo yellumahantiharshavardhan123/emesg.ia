@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/supabaseClient'
 import type { Chat, Group, Profile } from '@/utils/types'
 import { useAuth } from '@/hooks/useAuth'
-import { MessageSquare, Users2, Plus, Settings } from 'lucide-react'
+import { MessageSquare, Users2, Plus, Settings, MessageSquarePlus } from 'lucide-react'
 
 export default function SidebarLeft({ onSelect, active }: { onSelect: (t: 'chat' | 'group', id: string) => void; active: { type: 'chat' | 'group' | null; id?: string | null } }) {
   const { user } = useAuth()
@@ -48,7 +48,15 @@ export default function SidebarLeft({ onSelect, active }: { onSelect: (t: 'chat'
     <div className="h-full flex flex-col">
       <div className="p-3 flex items-center justify-between border-b border-white/10">
         <div className="text-sm font-medium opacity-80">Recent</div>
-        <button className="btn-outline" onClick={createGroup}><Plus size={16} /> New group</button>
+        <div className="flex items-center gap-2">
+          <button className="btn-outline" onClick={async () => {
+            const other = prompt('Start chat with user ID')?.trim()
+            if (!other) return
+            const { data } = await supabase.from('chats').insert({ user1_id: user!.id, user2_id: other }).select('*').single()
+            if (data) onSelect('chat', (data as Chat).id)
+          }}><MessageSquarePlus size={16} /> New chat</button>
+          <button className="btn-outline" onClick={createGroup}><Plus size={16} /> New group</button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto">
         <div className="px-2 py-3 text-xs uppercase tracking-wide opacity-60">Chats</div>
