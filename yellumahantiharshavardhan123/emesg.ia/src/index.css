@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --radius: 16px;
+
+  --color-primary: #3B82F6; /* neon blue */
+  --color-accent: #06B6D4; /* electric cyan */
+
+  --color-background: oklch(0.15 0 0); /* base for dark */
+  --color-foreground: oklch(0.98 0 0);
+  --color-card: oklch(0.17 0 0);
+  --color-card-foreground: oklch(0.98 0 0);
+  --color-border: oklch(1 0 0 / 10%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: #3B82F6;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply text-foreground font-sans; background: linear-gradient(180deg, #0A0A0A 0%, #101828 100%); }
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-lg rounded-xl;
+}
+
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-lg bg-[#3B82F6] hover:bg-[#2563EB] text-white px-4 py-2 transition-colors;
+}
+
+.btn-outline {
+  @apply inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white px-4 py-2 transition-colors;
+}
