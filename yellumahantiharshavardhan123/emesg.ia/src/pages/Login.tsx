@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { LogIn, Phone, Shield } from 'lucide-react'
@@ -6,7 +7,9 @@ export default function Login() {
   const { user, signInWithGoogle } = useAuthContext()
   const navigate = useNavigate()
 
-  if (user) navigate('/dashboard')
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true })
+  }, [user])
 
   return (
     <div className="min-h-screen grid place-items-center px-4">
